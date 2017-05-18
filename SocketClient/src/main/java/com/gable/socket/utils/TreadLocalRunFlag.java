@@ -8,7 +8,6 @@ public class TreadLocalRunFlag {
 	        protected HashMap initialValue() {
 	        	HashMap<String,Object> map = new HashMap<String,Object>();
 	        	map.put("RunFlag", true);	//SocketClient 监控 SocketServer 标识
-	        	map.put("SendFlag", true);	//邮件开关
 	            return map; 
 	        } 
 	    }; 
