@@ -21,7 +21,8 @@ import com.gable.socket.utils.PropertiesUtil;
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan("com.gable.socket.*")
-public class Application extends SpringBootServletInitializer implements InitializingBean, ApplicationListener<ContextRefreshedEvent> {
+public class Application extends SpringBootServletInitializer
+		implements InitializingBean, ApplicationListener<ContextRefreshedEvent> {
 
 	Logger log = Logger.getLogger(Application.class);
 	@Value("${PORT:0}")
@@ -35,9 +36,9 @@ public class Application extends SpringBootServletInitializer implements Initial
 	Long keepAliveDelay;
 
 	// 内部服务器转发地址
-	@Value("${LocalAddress:'http:127.0.0.1:8080/apphospital'}")
+	@Value("${LocalAddress}")
 	String LocalAddress;
-	
+
 	// 容器加载完毕，发送心跳包，监听服务器端业务数据
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
@@ -50,19 +51,18 @@ public class Application extends SpringBootServletInitializer implements Initial
 			// 接受来自服务器端的请求
 			InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
 			new Thread(ist).start();
-
 		} catch (Exception e) {
 			log.info("_____Application2,连接服务器异常,ADDRESS:" + ADDRESS + ",端口:" + PORT + ",error:" + e.toString());
 		}
 	}
 
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		//加载配置文件中的变量
+		// 加载配置文件中的变量
 		InitUtil.propertiesMap = PropertiesUtil.initApplicationProperties();
-		log.info("_____initProperties:"+InitUtil.propertiesMap);
+		log.info("_____initProperties:" + InitUtil.propertiesMap);
 	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}

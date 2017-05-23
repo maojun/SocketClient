@@ -92,7 +92,7 @@ public class SocketBean implements Serializable {
 
 	public SocketBean(UUID uid, String result, Integer code, String errorMsg) {
 		this.uid = uid;
-		this.result = result;
+		this.result = result==null?"":result;
 		this.code = code;
 		this.errorMsg = errorMsg;
 	}
