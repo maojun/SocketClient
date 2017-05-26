@@ -1,11 +1,11 @@
 package com.gable.socket.application;
 
 import java.net.Socket;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
@@ -45,12 +45,15 @@ public class Application extends SpringBootServletInitializer
 		try {
 			Socket socket = new Socket(ADDRESS, PORT);
 			log.info("_____Application1,连接服务器成功,ADDRESS:" + ADDRESS + ",端口:" + PORT);
+			// 创建无界线程池
+			InitUtil.executorService = Executors.newCachedThreadPool();
 			// 心跳包
 			KeepAliveWatchThread sat = new KeepAliveWatchThread(socket, PORT, ADDRESS, keepAliveDelay, LocalAddress);
-			new Thread(sat).start();
+			InitUtil.executorService.execute(sat);
 			// 接受来自服务器端的请求
-			InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
-			new Thread(ist).start();
+				InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
+				new Thread(ist).start();
+			// InitUtil.executorService.execute(ist);
 		} catch (Exception e) {
 			log.info("_____Application2,连接服务器异常,ADDRESS:" + ADDRESS + ",端口:" + PORT + ",error:" + e.toString());
 		}
@@ -61,9 +64,5 @@ public class Application extends SpringBootServletInitializer
 		// 加载配置文件中的变量
 		InitUtil.propertiesMap = PropertiesUtil.initApplicationProperties();
 		log.info("_____initProperties:" + InitUtil.propertiesMap);
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
 	}
 }

@@ -57,43 +57,10 @@ public class KeepAliveWatchThread implements Runnable {
 					try {
 						TreadLocalRunFlag.threadLoacl.get().put("RunFlag", false);
 						socket.close();
+						firstDisconnectTime = restKeepAlive(firstDisconnectTime);
 					} catch (IOException e1) {
 						log.error("_____KeepAliveWatchThread2,关闭客户端失败:" + e.toString());
 					}
-					// 尝试重新连接，如在配置时间内无法重连，则发送邮件
-					try {
-						// 邮件发送标识，true在一段时间后如果还无法重连，则发送一次邮件，邮件发送过后，则将关闭邮件发送标识
-						// && (Boolean) TreadLocalRunFlag.threadLoacl.get().get("SendFlag")
-						if (firstDisconnectTime == 0)
-							firstDisconnectTime = System.currentTimeMillis();
-						
-						//尝试重新连接
-						Socket socket = new Socket(address, port);
-						this.socket = socket;
-						
-						//重连成功，1.重置监听标识，2.打开邮件发送标识，3.重启监听
-						// 重置SocketClient监听SocketServer数据写入标识
-						TreadLocalRunFlag.threadLoacl.get().put("RunFlag", true);
-						log.info("_____KeepAliveWatchThread3,重新连接服务器成功" + TreadLocalRunFlag.threadLoacl.get());
-						firstDisconnectTime = 0; // 重置断开时间
-//						TreadLocalRunFlag.threadLoacl.get().put("SendFlag", true); // 打开邮件发送标识
-						// 重启监听
-						InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
-						new Thread(ist).start();
-					} catch (Exception e1) {
-						log.error("_____KeepAliveWatchThread4,重新尝试连接服务器失败，等待下次重试:" + e1.toString());
-						// 如在配置时间内无法重连，则发送邮件 && (Boolean) TreadLocalRunFlag.threadLoacl.get().get("SendFlag")
-						if (System.currentTimeMillis() - firstDisconnectTime > Long
-								.parseLong(InitUtil.propertiesMap.get("SENDMAILDELAY").toString())
-								&& !(Boolean) TreadLocalRunFlag.threadLoacl.get().get("RunFlag")) {
-							Boolean sendMail = AliMailSendUtil.sendMail();
-							if (sendMail) {
-//								TreadLocalRunFlag.threadLoacl.get().put("SendFlag", false);// 关闭邮件发送标识
-								firstDisconnectTime = 0; // 重置断开时间
-							}
-						}
-					}
-
 				}
 				lastSendTime = System.currentTimeMillis();
 			} else {
@@ -106,4 +73,43 @@ public class KeepAliveWatchThread implements Runnable {
 		}
 	}
 
+	public Long restKeepAlive(Long firstDisconnectTime) {
+		// 尝试重新连接，如在配置时间内无法重连，则发送邮件
+		try {
+			// 邮件发送标识，true在一段时间后如果还无法重连，则发送一次邮件，邮件发送过后，则将关闭邮件发送标识
+			// && (Boolean) TreadLocalRunFlag.threadLoacl.get().get("SendFlag")
+			if (firstDisconnectTime == 0)
+				firstDisconnectTime = System.currentTimeMillis();
+
+			// 尝试重新连接
+			Socket socket = new Socket(address, port);
+			this.socket = socket;
+
+			// 重连成功，1.重置监听标识，2.打开邮件发送标识，3.重启监听
+			// 重置SocketClient监听SocketServer数据写入标识
+			TreadLocalRunFlag.threadLoacl.get().put("RunFlag", true);
+			log.info("_____KeepAliveWatchThread3,重新连接服务器成功" + TreadLocalRunFlag.threadLoacl.get());
+			firstDisconnectTime = 0L; // 重置断开时间
+			// TreadLocalRunFlag.threadLoacl.get().put("SendFlag", true); //
+			// 打开邮件发送标识
+			// 重启监听
+			InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
+			new Thread(ist).start();
+		} catch (Exception e1) {
+			log.error("_____KeepAliveWatchThread4,重新尝试连接服务器失败，等待下次重试:" + e1.toString());
+			// 如在配置时间内无法重连，则发送邮件 && (Boolean)
+			// TreadLocalRunFlag.threadLoacl.get().get("SendFlag")
+			if (System.currentTimeMillis() - firstDisconnectTime > Long
+					.parseLong(InitUtil.propertiesMap.get("SENDMAILDELAY").toString())
+					&& !(Boolean) TreadLocalRunFlag.threadLoacl.get().get("RunFlag")) {
+				Boolean sendMail = AliMailSendUtil.sendMail();
+				if (sendMail) {
+					// TreadLocalRunFlag.threadLoacl.get().put("SendFlag",
+					// false);// 关闭邮件发送标识
+					firstDisconnectTime = 0l; // 重置断开时间
+				}
+			}
+		}
+		return firstDisconnectTime;
+	}
 }
