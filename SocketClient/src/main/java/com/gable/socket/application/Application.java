@@ -50,10 +50,10 @@ public class Application extends SpringBootServletInitializer
 			// 心跳包
 			KeepAliveWatchThread sat = new KeepAliveWatchThread(socket, PORT, ADDRESS, keepAliveDelay, LocalAddress);
 			InitUtil.executorService.execute(sat);
+			
 			// 接受来自服务器端的请求
-				InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
-				new Thread(ist).start();
-			// InitUtil.executorService.execute(ist);
+			InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
+			InitUtil.executorService.execute(ist);
 		} catch (Exception e) {
 			log.info("_____Application2,连接服务器异常,ADDRESS:" + ADDRESS + ",端口:" + PORT + ",error:" + e.toString());
 		}

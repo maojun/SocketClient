@@ -39,7 +39,6 @@ public class InputSocketThread implements Runnable {
 			try {
 				InputStream in = socket.getInputStream();
 				if (in.available() > 0) {
-					System.out.println("=====================读取到的长度："+in.available());
 					try {
 						ObjectInputStream ois = new ObjectInputStream(in);
 						Object obj = ois.readObject();
@@ -100,26 +99,26 @@ public class InputSocketThread implements Runnable {
 			}
 		}
 	}
-	
-	public static List<byte[]> readStreamList(InputStream inStream) throws Exception {  
+
+	public static List<byte[]> readStreamList(InputStream inStream) throws Exception {
 		List<byte[]> list = new ArrayList<byte[]>();
-	    int count = 0;  
-	    while (count == 0) {  
-	        count = inStream.available();  
-	    }  
-	    byte[] b = new byte[count];  
-	    inStream.read(b);  
-	    list.add(b);
-	    return list;  
+		int count = 0;
+		while (count == 0) {
+			count = inStream.available();
+		}
+		byte[] b = new byte[count];
+		inStream.read(b);
+		list.add(b);
+		return list;
 	}
-	
-	public static byte[] readStream(InputStream inStream) throws Exception {  
-	    int count = 0;
-	    while (count == 0) {
-	        count = inStream.available();
-	    }
-	    byte[] b = new byte[count];  
-	    inStream.read(b);  
-	    return b;  
+
+	public static byte[] readStream(InputStream inStream) throws Exception {
+		int count = 0;
+		while (count == 0) {
+			count = inStream.available();
+		}
+		byte[] b = new byte[count];
+		inStream.read(b);
+		return b;
 	}
 }
