@@ -31,12 +31,14 @@ public class KeepAliveWatchThread implements Runnable {
 
 	private String LocalAddress;
 
-	public KeepAliveWatchThread(Socket socket, Integer port, String address, Long keepAliveDelay, String LocalAddress) {
+	private Integer index;
+	public KeepAliveWatchThread(Socket socket, Integer port, String address, Long keepAliveDelay, String LocalAddress,Integer index) {
 		this.socket = socket;
 		this.port = port;
 		this.address = address;
 		this.keepAliveDelay = keepAliveDelay;
 		this.LocalAddress = LocalAddress;
+		this.index = index;
 	}
 
 	@Override
@@ -93,7 +95,7 @@ public class KeepAliveWatchThread implements Runnable {
 			// TreadLocalRunFlag.threadLoacl.get().put("SendFlag", true); //
 			// 打开邮件发送标识
 			// 重启监听
-			InputSocketThread ist = new InputSocketThread(socket, LocalAddress);
+			InputSocketThread ist = new InputSocketThread(socket, LocalAddress,index);
 			new Thread(ist).start();
 		} catch (Exception e1) {
 			log.error("_____KeepAliveWatchThread4,重新尝试连接服务器失败，等待下次重试:" + e1.toString());

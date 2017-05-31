@@ -2,6 +2,7 @@ package com.gable.socket.utils;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class InitUtil {
 	/**
@@ -12,5 +13,5 @@ public class InitUtil {
 	/**
 	 * 无界线程池
 	 */
-	public static ExecutorService executorService;
+	public static ExecutorService executorService = Executors.newCachedThreadPool();
 }

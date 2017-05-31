@@ -28,9 +28,11 @@ public class InputSocketThread implements Runnable {
 
 	private Socket socket;
 
-	public InputSocketThread(Socket socket, String LocalAddress) {
+	private Integer index;
+	public InputSocketThread(Socket socket, String LocalAddress,Integer index) {
 		this.socket = socket;
 		this.LocalAddress = LocalAddress;
+		this.index = index;
 	}
 
 	@Override
@@ -40,8 +42,10 @@ public class InputSocketThread implements Runnable {
 				InputStream in = socket.getInputStream();
 				if (in.available() > 0) {
 					try {
+						log.info("socket对象："+index+"准备工作");
 						ObjectInputStream ois = new ObjectInputStream(in);
 						Object obj = ois.readObject();
+						log.info("socket对象："+index+"开始工作");
 						if (obj != null) {
 							String jsonStr = JsonUtil.toJsonString(obj);
 							log.info("_____InputSocketThread1,接受来自服务器的参数：" + jsonStr);
