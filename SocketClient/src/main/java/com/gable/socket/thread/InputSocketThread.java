@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -17,6 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gable.socket.bean.SocketBean;
 import com.gable.socket.utils.HttpHelper;
+import com.gable.socket.utils.InitUtil;
 import com.gable.socket.utils.JsonUtil;
 import com.gable.socket.utils.TreadLocalRunFlag;
 
@@ -74,10 +73,10 @@ public class InputSocketThread implements Runnable {
 										e.printStackTrace();
 									}
 
-									// 有文件时，从阿里云上面下载文件，写到本地，不关心结果
+									// 有文件时，从服务器上面获取文件流，写到本地，不关心结果
 									String filePath = paramMap.get("fileAddress");
 									if (!StringUtils.isEmpty(filePath))
-										new Thread(new FileUploadThread(filePath)).start();
+										InitUtil.executorService.execute(new FileUploadThread(filePath));
 								}
 							} catch (Exception e) {
 								log.error("_____InputSocketThread5,客户端转发失败：" + e.toString());
@@ -102,27 +101,5 @@ public class InputSocketThread implements Runnable {
 				}
 			}
 		}
-	}
-
-	public static List<byte[]> readStreamList(InputStream inStream) throws Exception {
-		List<byte[]> list = new ArrayList<byte[]>();
-		int count = 0;
-		while (count == 0) {
-			count = inStream.available();
-		}
-		byte[] b = new byte[count];
-		inStream.read(b);
-		list.add(b);
-		return list;
-	}
-
-	public static byte[] readStream(InputStream inStream) throws Exception {
-		int count = 0;
-		while (count == 0) {
-			count = inStream.available();
-		}
-		byte[] b = new byte[count];
-		inStream.read(b);
-		return b;
 	}
 }

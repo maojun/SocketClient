@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 
 public class InitUtil {
 	/**
-	 * 医院ID——socket端口 映射MAP
+	 * 配置文件map
 	 */
 	public static Map<String,String> propertiesMap;
 	

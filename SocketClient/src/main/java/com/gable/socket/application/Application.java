@@ -38,10 +38,10 @@ public class Application extends SpringBootServletInitializer
 	@Value("${LocalAddress}")
 	String LocalAddress;
 
-	//客户端线程连接数
+	// 客户端线程连接数
 	@Value("${maxThreadNum}")
 	Integer maxThreadNum;
-	
+
 	// 容器加载完毕，发送心跳包，监听服务器端业务数据
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent arg0) {
@@ -49,11 +49,12 @@ public class Application extends SpringBootServletInitializer
 			for (int i = 0; i < maxThreadNum; i++) {
 				Socket socket = new Socket(ADDRESS, PORT);
 				// 心跳包
-				KeepAliveWatchThread sat = new KeepAliveWatchThread(socket, PORT, ADDRESS, keepAliveDelay, LocalAddress,i+1);
+				KeepAliveWatchThread sat = new KeepAliveWatchThread(socket, PORT, ADDRESS, keepAliveDelay, LocalAddress,
+						i + 1);
 				InitUtil.executorService.execute(sat);
 
 				// 接受来自服务器端的请求
-				InputSocketThread ist = new InputSocketThread(socket, LocalAddress,i+1);
+				InputSocketThread ist = new InputSocketThread(socket, LocalAddress, i + 1);
 				InitUtil.executorService.execute(ist);
 			}
 			log.info("_____Application1,连接服务器成功,ADDRESS:" + ADDRESS + ",端口:" + PORT);
