@@ -37,6 +37,7 @@ public class FileUploadThread implements Runnable {
 		try {
 			Map<String,String> parameters = new HashMap<String,String>();
 			parameters.put("filePath", filePath);
+			log.info("_____文件："+filePath);
 			//http请求服务器上的文件流
 			String result = HttpHelper.postRequestResponseBodyAsString(InitUtil.propertiesMap.get("FILEREQUEST"), parameters);
 			//完整文件写入地址：流
@@ -61,7 +62,7 @@ public class FileUploadThread implements Runnable {
 		}
 	}
 	 //根据byte数组，生成文件 
-    public static void getFile(byte[] bfile, String filePath) {  
+    public void getFile(byte[] bfile, String filePath) {  
         BufferedOutputStream bos = null;  
         FileOutputStream fos = null;  
         File file = null;  
