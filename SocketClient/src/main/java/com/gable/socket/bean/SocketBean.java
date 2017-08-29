@@ -97,6 +97,6 @@ public class SocketBean implements Serializable {
 		this.errorMsg = errorMsg;
 	}
 
-	private SocketBean() {
+	public SocketBean() {
 	}
 }

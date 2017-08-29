@@ -48,7 +48,8 @@ public class InputSocketThread implements Runnable {
 						if (obj != null) {
 							String jsonStr = JsonUtil.toJsonString(obj);
 							log.info("_____InputSocketThread1,接受来自服务器的参数：" + jsonStr);
-							SocketBean object = JsonUtil.getObject(jsonStr, SocketBean.class);
+							SocketBean object = new SocketBean();
+							object = JsonUtil.getObject(jsonStr, SocketBean.class);
 							String serviceURL = object.getServiceURL(); // 转发的请求路径
 							String param = object.getParam(); // 转发的参数
 
